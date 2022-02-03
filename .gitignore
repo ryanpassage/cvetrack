@@ -611,3 +611,4 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/python,django,visualstudio,azurefunctions
 .DS_Store
+cvetrack/__pycache__/settings.cpython-39.pyc
