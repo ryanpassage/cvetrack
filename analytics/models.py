@@ -15,7 +15,8 @@ class VulnerableDevice(models.Model):
 
     def printable_firmware_version(self):
         return f'{self.firmware_major:02}{self.firmware_minor}.{self.firmware_build}'
+    printable_firmware_version.short_description = 'Firmware Version'
 
     def __str__(self):
-        return f'{self.serial_number} ({self.printable_firmware_version()})' 
+        return self.serial_number 
 
