@@ -11,7 +11,7 @@ class VulnerableDevice(models.Model):
     firmware_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Firmware Minor')
     firmware_build = models.CharField(max_length=8, blank=False, verbose_name='Firmware Build')
 
-    vulnerable_cves = models.ManyToManyField(CVE)
+    vulnerable_cves = models.ManyToManyField(CVE, verbose_name="Vulnerable CVEs")
 
     def printable_firmware_version(self):
         return f'{self.firmware_major:02}{self.firmware_minor}.{self.firmware_build}'
