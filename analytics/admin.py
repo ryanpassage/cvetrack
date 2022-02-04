@@ -1,3 +1,7 @@
 from django.contrib import admin
+from analytics.models import VulnerableDevice
 
-# Register your models here.
+@admin.register(VulnerableDevice)
+class VulnerableDeviceAdmin(admin.ModelAdmin):
+    pass
+

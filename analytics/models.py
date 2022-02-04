@@ -1,9 +1,10 @@
-from operator import itemgetter
 from django.db import models
 from core.models import CVE
 
-# Create your models here.
 class VulnerableDevice(models.Model):
+    class Meta:
+        verbose_name = 'Vulnerable Device'
+
     serial_number = models.CharField(max_length=15)
     last_seen = models.DateTimeField(auto_now=False, auto_now_add=True)
     firmware_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Firmware Major')
