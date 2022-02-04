@@ -1,9 +1,11 @@
-from logging import CRITICAL
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 class CVE(models.Model):
+    class Meta:
+        verbose_name = 'CVE'
+
     mitre_id = models.CharField(max_length=20, blank=False, verbose_name='Mitre ID', help_text='CVE number assigned by Mitre')
     public_release_date = models.DateField(blank=False, help_text='CVE release date')
     base_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='CVSS Base Score')
@@ -20,6 +22,9 @@ class RiskProfile(models.Model):
         MODERATE = 3, _('(3) Moderate Concern')
         HIGH = 4, _('(4) High Concern')
         CRITICAL = 5, _('(5) CRITICAL')
+
+    class Meta:
+        verbose_name = 'Risk Profile'
     
     cve = models.ForeignKey(CVE, on_delete=models.CASCADE)
 
@@ -35,6 +40,9 @@ class RiskProfile(models.Model):
         return f'{self.cve} S:{self.severity} U:{self.urgency}'
 
 class FirmwareReference(models.Model):
+    class Meta:
+        verbose_name = 'Firmware Reference'
+        
     cve = models.ForeignKey(CVE, on_delete=models.CASCADE)
     rollup_versions = models.BooleanField(default=True, verbose_name='Roll-Up Previous Versions', help_text='Enable to include all previous firmware versions in this profile.')
 
