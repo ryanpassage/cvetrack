@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework.authtoken',
     'core.apps.CoreConfig',
     'api.apps.ApiConfig',
     'analytics.apps.AnalyticsConfig',
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'cvetrack.middleware.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'cvetrack.urls'
