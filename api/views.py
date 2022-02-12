@@ -34,3 +34,9 @@ class StatusView(APIView):
         }
 
         return Response(content, status=http_status.HTTP_200_OK)
+
+class DummyView(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, format=None):
+        return Response({'status': 'no content'}, status=http_status.HTTP_200_OK)
