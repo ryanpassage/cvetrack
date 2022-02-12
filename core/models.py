@@ -16,7 +16,7 @@ class CVE(models.Model):
     class Meta:
         verbose_name = 'CVE'
 
-    mitre_id = models.CharField(max_length=20, blank=False, verbose_name='Mitre ID', help_text='CVE number assigned by Mitre')
+    mitre_id = models.CharField(max_length=20, blank=False, verbose_name='Mitre ID', help_text='CVE number assigned by Mitre in full CVE-YEAR-##### format.')
     public_release_date = models.DateField(blank=False, help_text='CVE release date')
     base_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='CVSS Base Score')
     impact_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='Impact Subscore', help_text='Impact Subscore from Mitre')
@@ -53,17 +53,17 @@ class FirmwareReference(models.Model):
     class Meta:
         verbose_name = 'Firmware Reference'
         
-    cve = models.ForeignKey(CVE, on_delete=models.CASCADE)
+    cve = models.ForeignKey(CVE, on_delete=models.CASCADE, verbose_name='CVE')
     rollup_versions = models.BooleanField(default=True, verbose_name='Roll-Up Previous Versions', help_text='Enable to include all previous firmware versions in this profile.')
 
     # Based on firmware release naming convention documentation from FW PE:
     # https://lexmarkad.sharepoint.com/:w:/r/sites/firmware_software_product_engineering/_layouts/15/Doc.aspx?sourcedoc=%7B586CBABA-10E4-4913-ACF9-F39378EEFE9F%7D&file=Firmware%20Release%20Naming%20Convention.docx&action=default&mobileredirect=true&cid=1a3cc8f8-c89f-4300-848b-26772e1e2062
-    affected_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Major')
-    affected_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Minor')
-    affected_build = models.CharField(max_length=8, blank=False, verbose_name='Affected Build')
-    fixed_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Major')
-    fixed_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Minor')
-    fixed_build = models.CharField(max_length=8, blank=False, verbose_name='Fixed Build')
+    affected_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Major', help_text='Example: for FW 076.293, enter 7 (no leading 0)')
+    affected_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Minor', help_text='Example: for FW 076.293, enter 6')
+    affected_build = models.CharField(max_length=8, blank=False, verbose_name='Affected Build', help_text='Example: for FW 076.293, enter 293. If there are letters in the build, leave them out.')
+    fixed_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Major', help_text='Example: for FW 076.293, enter 7 (no leading 0)')
+    fixed_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Minor', help_text='Example: for FW 076.293, enter 6')
+    fixed_build = models.CharField(max_length=8, blank=False, verbose_name='Fixed Build', help_text='Example: for FW 076.293, enter 293. If there are letters in the build, leave them out.')
 
     def printable_firmware_version(self, which='affected'):
         major = getattr(self, f'{which}_major')
