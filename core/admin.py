@@ -6,14 +6,17 @@ admin.site.index_title = 'Data administration'
 
 @admin.register(CVE)
 class CVEAdmin(admin.ModelAdmin):
-    list_fields = ('mitre_id', 'public_release_date', 'base_score',)
+    list_display = ('mitre_id', 'public_release_date', 'base_score',)
 
 
 @admin.register(RiskProfile)
 class RiskProfileAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('cve', 'severity', 'urgency',)
+
 
 @admin.register(FirmwareReference)
 class FirmwareReferenceAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('cve', 'printable_affected_version', 'printable_fixed_version', 'rollup_versions',)
 
+
+    

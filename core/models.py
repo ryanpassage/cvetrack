@@ -21,6 +21,8 @@ class CVE(models.Model):
     base_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='CVSS Base Score')
     impact_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='Impact Subscore', help_text='Impact Subscore from Mitre')
     exploitability_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='Exploitability Subscore', help_text='Exploitability Subscore from Mitre')
+    short_description = models.TextField(blank=True, help_text='Provide a one-line description for this CVE.')
+    
 
     def __str__(self):
         return self.mitre_id
@@ -71,6 +73,14 @@ class FirmwareReference(models.Model):
         build = getattr(self, f'{which}_build')
 
         return f'{major:02}{minor}.{build}'
+
+    def printable_affected_version(self):
+        return self.printable_firmware_version(which='affected')
+    printable_affected_version.short_description = 'Affected Version'
+    
+    def printable_fixed_version(self):
+        return self.printable_firmware_version(which='fixed')
+    printable_fixed_version.short_description = 'Fixed Version'
 
     def __str__(self):
         incl_prev = ' and previous' if self.rollup_versions is True else ' only'

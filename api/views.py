@@ -4,6 +4,7 @@ from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from core.models import CVE, RiskProfile, FirmwareReference
@@ -17,7 +18,7 @@ class StatusView(APIView):
 
     def get(self, request, format=None):
         system_ok = True
-        status = None
+        status_msg = None
 
         # perform a simple database query to determine if system is operational
         # throttling prevents this from being abused to exhaust resources
@@ -37,6 +38,6 @@ class StatusView(APIView):
 
 class DummyView(APIView):
     authentication_classes = [TokenAuthentication]
-
-    def get(self, request, format=None):
-        return Response({'status': 'no content'}, status=http_status.HTTP_200_OK)
+    
+    def get(self, request: Request, format=None):
+        return Response({'endpoint': request.path}, status=http_status.HTTP_200_OK)
