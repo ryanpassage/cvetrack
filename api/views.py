@@ -26,12 +26,12 @@ class RiskProfileViewSet(viewsets.ModelViewSet):
     serializer_class = RiskProfileSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class FirmwareReferenceSerializer(viewsets.ModelViewSet):
+class FirmwareReferenceViewSet(viewsets.ModelViewSet):
     queryset = FirmwareReference.objects.all()
     serializer_class = FirmwareReferenceSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class VulnerableDeviceSerializer(viewsets.ModelViewSet):
+class VulnerableDeviceViewSet(viewsets.ModelViewSet):
     queryset = VulnerableDevice.objects.all()
     serializer_class = VulnerableDeviceSerializer
     permission_classes = [permissions.IsAuthenticated]
