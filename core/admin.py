@@ -6,7 +6,7 @@ admin.site.index_title = 'Data administration'
 
 @admin.register(CVE)
 class CVEAdmin(admin.ModelAdmin):
-    list_display = ('mitre_id', 'public_release_date', 'base_score',)
+    list_display = ('mitre_id', 'base_score', 'impact_score', 'exploitability_score',)
 
 
 @admin.register(RiskProfile)
