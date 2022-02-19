@@ -22,7 +22,8 @@ class CVE(models.Model):
     impact_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='Impact Subscore', help_text='Impact Subscore from Mitre')
     exploitability_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='Exploitability Subscore', help_text='Exploitability Subscore from Mitre')
     short_description = models.TextField(blank=True, help_text='Provide a one-line description for this CVE.')
-    
+    support_url = models.URLField()
+
 
     def __str__(self):
         return self.mitre_id
@@ -46,7 +47,6 @@ class RiskProfile(models.Model):
 
     summary = models.TextField(blank=True)
     impact = models.TextField(blank=True)
-    support_url = models.URLField()
 
     def __str__(self):
         return f'{self.cve} S:{self.severity} U:{self.urgency}'

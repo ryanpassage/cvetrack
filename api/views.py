@@ -6,11 +6,36 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
+from rest_framework import viewsets
+from rest_framework import permissions
 
 from core.models import CVE, RiskProfile, FirmwareReference
 from analytics.models import VulnerableDevice
 
+from api.serializers import CVESerializer, RiskProfileSerializer, FirmwareReferenceSerializer
+from analytics.serializers import VulnerableDeviceSerializer
+
 # DRF API Views
+class CVEViewSet(viewsets.ModelViewSet):
+    queryset = CVE.objects.all()
+    serializer_class = CVESerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class RiskProfileViewSet(viewsets.ModelViewSet):
+    queryset = RiskProfile.objects.all()
+    serializer_class = RiskProfileSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class FirmwareReferenceSerializer(viewsets.ModelViewSet):
+    queryset = FirmwareReference.objects.all()
+    serializer_class = FirmwareReferenceSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class VulnerableDeviceSerializer(viewsets.ModelViewSet):
+    queryset = VulnerableDevice.objects.all()
+    serializer_class = VulnerableDeviceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
 
 # Unauthenticated view to request system status
 class StatusView(APIView):

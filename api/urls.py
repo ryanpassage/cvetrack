@@ -7,6 +7,7 @@ urlpatterns = [
 
     # GET: return generic msg
     # POST: should receive fields: serial_number, ip_address, firmware
-    path('check-in/', views.DummyView.as_view())
-    
+    path('check-in/', views.DummyView.as_view()),
+    path('cve/', views.DummyView.as_view())
+
 ]
