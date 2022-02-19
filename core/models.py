@@ -17,7 +17,7 @@ class CVE(models.Model):
         verbose_name = 'CVE'
 
     mitre_id = models.CharField(max_length=20, blank=False, verbose_name='Mitre ID', help_text='CVE number assigned by Mitre in full CVE-YEAR-##### format.')
-    public_release_date = models.DateField(blank=False, help_text='CVE release date')
+    public_release_date = models.DateField(blank=True, null=True, help_text='CVE release date')
     base_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='CVSS Base Score')
     impact_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='Impact Subscore', help_text='Impact Subscore from Mitre')
     exploitability_score = models.DecimalField(blank=True, max_digits=3, decimal_places=1, verbose_name='Exploitability Subscore', help_text='Exploitability Subscore from Mitre')
