@@ -6,6 +6,7 @@ router = routers.DefaultRouter()
 router.register(r'cves', views.CVEViewSet)
 router.register(r'risk-profiles', views.RiskProfileViewSet)
 router.register(r'firmware-references', views.FirmwareReferenceViewSet)
+router.register(r'devices', views.DeviceViewSet)
 
 # paths will resolve to /api/<endpoint>, e.g., /api/status/
 urlpatterns = [

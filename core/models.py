@@ -24,9 +24,9 @@ class CVE(models.Model):
     short_description = models.TextField(blank=True, help_text='Provide a one-line description for this CVE.')
     support_url = models.URLField()
 
-
     def __str__(self):
         return self.mitre_id
+
 
 class RiskProfile(models.Model):
     class Rating(models.IntegerChoices):
@@ -51,6 +51,7 @@ class RiskProfile(models.Model):
     def __str__(self):
         return f'{self.cve} S:{self.severity} U:{self.urgency}'
 
+
 class FirmwareReference(models.Model):
     class Meta:
         verbose_name = 'Firmware Reference'
@@ -62,10 +63,10 @@ class FirmwareReference(models.Model):
     # https://lexmarkad.sharepoint.com/:w:/r/sites/firmware_software_product_engineering/_layouts/15/Doc.aspx?sourcedoc=%7B586CBABA-10E4-4913-ACF9-F39378EEFE9F%7D&file=Firmware%20Release%20Naming%20Convention.docx&action=default&mobileredirect=true&cid=1a3cc8f8-c89f-4300-848b-26772e1e2062
     affected_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Major', help_text='Example: for FW 076.293, enter 7 (no leading 0)')
     affected_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Minor', help_text='Example: for FW 076.293, enter 6')
-    affected_build = models.CharField(max_length=8, blank=False, verbose_name='Affected Build', help_text='Example: for FW 076.293, enter 293. If there are letters in the build, leave them out.')
+    affected_build = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Build', help_text='Example: for FW 076.293, enter 293. If there are letters in the build, leave them out.')
     fixed_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Major', help_text='Example: for FW 076.293, enter 7 (no leading 0)')
     fixed_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Minor', help_text='Example: for FW 076.293, enter 6')
-    fixed_build = models.CharField(max_length=8, blank=False, verbose_name='Fixed Build', help_text='Example: for FW 076.293, enter 293. If there are letters in the build, leave them out.')
+    fixed_build = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Build', help_text='Example: for FW 076.293, enter 293. If there are letters in the build, leave them out.')
 
     def printable_firmware_version(self, which='affected'):
         major = getattr(self, f'{which}_major')
@@ -85,3 +86,24 @@ class FirmwareReference(models.Model):
     def __str__(self):
         incl_prev = ' and previous' if self.rollup_versions is True else ' only'
         return f'{self.cve}: {self.printable_firmware_version()}{incl_prev}'
+
+
+class Device(models.Model):
+    class Meta:
+        verbose_name = 'Device'
+
+    serial_number = models.CharField(max_length=15)
+    model = models.CharField(max_length=50)
+    last_seen = models.DateTimeField(auto_now=False, auto_now_add=True)
+    firmware_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Firmware Major')
+    firmware_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Firmware Minor')
+    firmware_build = models.CharField(max_length=8, blank=False, verbose_name='Firmware Build')
+
+    vulnerable_cves = models.ManyToManyField(CVE, verbose_name="Vulnerable CVEs", blank=True)
+
+    def printable_firmware_version(self):
+        return f'{self.firmware_major:02}{self.firmware_minor}.{self.firmware_build}'
+    printable_firmware_version.short_description = 'Firmware Version'
+
+    def __str__(self):
+        return self.serial_number 

@@ -6,12 +6,13 @@ class Device(models.Model):
         verbose_name = 'Device'
 
     serial_number = models.CharField(max_length=15)
+    model = models.CharField(max_length=50)
     last_seen = models.DateTimeField(auto_now=False, auto_now_add=True)
     firmware_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Firmware Major')
     firmware_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Firmware Minor')
     firmware_build = models.CharField(max_length=8, blank=False, verbose_name='Firmware Build')
 
-    vulnerable_cves = models.ManyToManyField(CVE, verbose_name="Vulnerable CVEs", null=True, blank=True)
+    vulnerable_cves = models.ManyToManyField(CVE, verbose_name="Vulnerable CVEs", blank=True)
 
     def printable_firmware_version(self):
         return f'{self.firmware_major:02}{self.firmware_minor}.{self.firmware_build}'
