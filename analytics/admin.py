@@ -1,8 +1,8 @@
 from django.contrib import admin
-from analytics.models import VulnerableDevice
+from analytics.models import Device
 
-@admin.register(VulnerableDevice)
-class VulnerableDeviceAdmin(admin.ModelAdmin):
+@admin.register(Device)
+class DeviceAdmin(admin.ModelAdmin):
     fields = ('serial_number', 'firmware_major', 'firmware_minor', 'firmware_build', 'vulnerable_cves',)
     readonly_fields = ('serial_number', 'last_seen', 'firmware_major', 'firmware_minor', 'firmware_build', 'vulnerable_cves',)
     list_display = ('serial_number', 'printable_firmware_version', 'last_seen',)

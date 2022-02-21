@@ -10,10 +10,10 @@ from rest_framework import viewsets
 from rest_framework import permissions
 
 from core.models import CVE, RiskProfile, FirmwareReference
-from analytics.models import VulnerableDevice
+from analytics.models import Device
 
 from api.serializers import CVESerializer, RiskProfileSerializer, FirmwareReferenceSerializer
-from analytics.serializers import VulnerableDeviceSerializer
+from analytics.serializers import DeviceSerializer
 
 # DRF API Views
 class CVEViewSet(viewsets.ModelViewSet):
@@ -31,10 +31,17 @@ class FirmwareReferenceViewSet(viewsets.ModelViewSet):
     serializer_class = FirmwareReferenceSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class VulnerableDeviceViewSet(viewsets.ModelViewSet):
-    queryset = VulnerableDevice.objects.all()
-    serializer_class = VulnerableDeviceSerializer
+class DeviceViewSet(viewsets.ModelViewSet):
+    queryset = Device.objects.all()
+    serializer_class = DeviceSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+# Device check-in endpoint
+class DeviceCheckInView(APIView):
+    throttle_classes = [UserRateThrottle]
+    authentication_classes = [TokenAuthentication]
+
 
 
 # Unauthenticated view to request system status

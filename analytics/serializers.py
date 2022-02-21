@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from analytics.models import VulnerableDevice
+from analytics.models import Device
 
-class VulnerableDeviceSerializer(serializers.HyperlinkedModelSerializer):
+class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = VulnerableDevice
+        model = Device
         fields = ('serial_number', 'last_seen', 'firmware_major', 'firmware_minor', 'firmware_build', 'vulnerable_cves',)
