@@ -68,7 +68,13 @@ class FirmwareParser:
             if len(part) == 2:
                 self.major = int(part[0])
                 self.minor = int(part[1])
-            
+        
+        if self.major > 0:
+            return True
+        else:
+            return False
+
+
     def formatted_version(self):
         return f'{self.major}.{self.minor}.{self.build}'
 
@@ -98,7 +104,7 @@ class DeviceViewSet(viewsets.ModelViewSet):
 # Device check-in endpoint
 class DeviceCheckInView(APIView):
     throttle_classes = [UserRateThrottle]
-    authentication_classes = [TokenAuthentication]
+    #authentication_classes = [TokenAuthentication]
 
     def get(self, request: Request):
         return Response({'error': True, 'reason': 'This endpoint accepts POST parameters only.'}, status=http_status.HTTP_400_BAD_REQUEST)
@@ -141,13 +147,25 @@ class DeviceCheckInView(APIView):
             content.update({'error': True, 'reason': f'Database error: {ex}', 'request_data': request.data})
             return Response(content, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        # find vulnerabilities by firmware reference
+        # TODO:
+        # This needs to be smarter about major/minor/build checks
+        # example: fw 8.3.201 is vulnerable to a CVE
+        # the below query will miss version 7.5.100 because minor version will fail the chained "AND" LTE check
+        refs = FirmwareReference.objects.filter(affected_major__lte=parser.major, affected_minor__lte=parser.minor, affected_build__lte=parser.build)
+        cves = []
 
+        for ref in refs:
+            logger.debug(f'Ref: {ref}')
+            serializer = CVESerializer(ref.cve)
+            
+            if len(serializer.data.items()) > 0:
+                cves.append(serializer.data)
 
+        if len(cves) > 0:
+            content.update({'has_vulnerabilities': True, 'cves': cves})
 
-
-
-
-
+        return Response(content, status=http_status.HTTP_200_OK)            
 
 
 # Unauthenticated view to request system status

@@ -4,12 +4,12 @@ from core.models import CVE, RiskProfile, FirmwareReference, Device
 class CVESerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CVE
-        fields = ('mitre_id', 'public_release_date', 'base_score', 'impact_score', 'exploitability_score', 'short_description',)
+        fields = ('mitre_id', 'public_release_date', 'base_score', 'impact_score', 'exploitability_score', 'short_description', 'support_url')
 
 class RiskProfileSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RiskProfile
-        fields = ('cve', 'severity', 'urgency', 'summary', 'impact', 'support_url',)
+        fields = ('cve', 'severity', 'urgency', 'summary', 'impact',)
 
 class FirmwareReferenceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
