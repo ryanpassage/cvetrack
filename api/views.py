@@ -163,11 +163,11 @@ class DeviceCheckInView(APIView):
         cves = []
         for ref in refs:
             logger.debug(f'Ref: {ref}')
-            device.vulnerable_cves.add(ref.cve)
             
             serializer = CVESerializer(ref.cve)
             
             if len(serializer.data.items()) > 0:
+                device.vulnerable_cves.add(ref.cve)
                 cves.append(serializer.data)
 
         if len(cves) > 0:
