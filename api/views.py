@@ -148,15 +148,23 @@ class DeviceCheckInView(APIView):
             return Response(content, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # find vulnerabilities by firmware reference
-        # TODO:
-        # This needs to be smarter about major/minor/build checks
-        # example: fw 8.3.201 is vulnerable to a CVE
-        # the below query will miss version 7.5.100 because minor version will fail the chained "AND" LTE check
-        refs = FirmwareReference.objects.filter(affected_major__lte=parser.major, affected_minor__lte=parser.minor, affected_build__lte=parser.build)
-        cves = []
+        logger.info(f'Checking CVEs for FW {parser.formatted_version()}')
+        major_refs = FirmwareReference.objects.filter(fixed_major__gt=parser.major) # automatically vulnerable to all of these
+        logger.info(f'\tMajor Refs: {major_refs.count()}')
+        major_minor_refs = FirmwareReference.objects.filter(fixed_major=parser.major, fixed_minor__gt=parser.minor) # CVEs for current major and minors LT current
+        logger.info(f'\tMajor+Minor Refs: {major_minor_refs.count()}')
+        build_refs = FirmwareReference.objects.filter(fixed_major=parser.major, fixed_minor=parser.minor, fixed_build__gt=parser.build)
+        logger.info(f'\tMajor+Minor+Build Refs: {build_refs.count()}')
 
+        # combine results in to one queryset (does not preserve order, which is fine)
+        refs = major_refs | major_minor_refs | build_refs
+        logger.success(f'Total CVEs: {refs.count()}')
+
+        cves = []
         for ref in refs:
             logger.debug(f'Ref: {ref}')
+            device.vulnerable_cves.add(ref.cve)
+            
             serializer = CVESerializer(ref.cve)
             
             if len(serializer.data.items()) > 0:

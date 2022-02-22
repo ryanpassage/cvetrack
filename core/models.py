@@ -73,7 +73,7 @@ class FirmwareReference(models.Model):
         minor = getattr(self, f'{which}_minor')
         build = getattr(self, f'{which}_build')
 
-        return f'{major:02}{minor}.{build}'
+        return f'{major:02}.{minor}.{build}'
 
     def printable_affected_version(self):
         return self.printable_firmware_version(which='affected')
@@ -85,7 +85,7 @@ class FirmwareReference(models.Model):
 
     def __str__(self):
         incl_prev = ' and previous' if self.rollup_versions is True else ' only'
-        return f'{self.cve}: {self.printable_firmware_version()}{incl_prev}'
+        return f'{self.cve}: {self.printable_fixed_version()}{incl_prev}'
 
 
 class Device(models.Model):
@@ -102,7 +102,7 @@ class Device(models.Model):
     vulnerable_cves = models.ManyToManyField(CVE, verbose_name="Vulnerable CVEs", blank=True)
 
     def printable_firmware_version(self):
-        return f'{self.firmware_major:02}{self.firmware_minor}.{self.firmware_build}'
+        return f'{self.firmware_major:02}.{self.firmware_minor}.{self.firmware_build}'
     printable_firmware_version.short_description = 'Firmware Version'
 
     def __str__(self):
