@@ -32,7 +32,7 @@ class FirmwareParser:
 
     def _parse(self):
         if not self.firmware:
-            return None
+            return False
         
         # example firmware version formats:
         # - CSTAT.075.281
