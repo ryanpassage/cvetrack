@@ -25,7 +25,10 @@ class FirmwareParser:
         self.minor = 0
         self.build = 0
 
-        self.parsed = self._parse()
+        if firmware is None:
+            self.parsed = False
+        else:
+            self.parsed = self._parse()
 
     def _parse(self):
         if not self.firmware:
