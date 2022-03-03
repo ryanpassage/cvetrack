@@ -108,7 +108,7 @@ class DeviceViewSet(viewsets.ModelViewSet):
 class DeviceCheckInView(APIView):
     throttle_classes = [UserRateThrottle]
     authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request: Request):
         return Response({'error': True, 'reason': 'This endpoint accepts POST parameters only.'}, status=http_status.HTTP_400_BAD_REQUEST)
