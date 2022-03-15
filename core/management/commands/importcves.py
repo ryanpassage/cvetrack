@@ -22,9 +22,9 @@ class Command(BaseCommand):
                     try:
                         item = CVE(
                             mitre_id=row['CVE Number'],
-                            base_score=float(row['CVSSv3 Base Score']),
-                            impact_score=float(row['Impact Subscore']),
-                            exploitability_score=float(row['Exploitability Subscore']),
+                            base_score=float(row.get('CVSSv3 Base Score', 0)),
+                            impact_score=float(row.get('Impact Subscore', 0)),
+                            exploitability_score=float(row.get('Exploitability Subscore', 0)),
                             short_description=row['Description'],
                             support_url=row['CVE Support URL']
                         )
