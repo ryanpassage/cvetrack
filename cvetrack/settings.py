@@ -27,6 +27,8 @@ DEBUG = 'runserver' in sys.argv
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'gt-practicum-cvetrack.azurewebsites.net']
 
+# new in Django 4 - for CSRF protection on /admin
+CSRF_TRUSTED_ORIGINS = ['https://gt-practicum-cvetrack.azurewebsites.net']
 
 # Application definition
 
