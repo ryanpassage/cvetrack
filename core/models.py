@@ -13,6 +13,13 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 # Create your models here.
 class CVE(models.Model):
+    class Rating(models.IntegerChoices):
+        LEAST_CONCERN = 1, _('(1) Least Concern')
+        SOME_CONCERN = 2, _('(2) Some Concern')
+        MODERATE = 3, _('(3) Moderate Concern')
+        HIGH = 4, _('(4) High Concern')
+        CRITICAL = 5, _('(5) CRITICAL')
+
     class Meta:
         verbose_name = 'CVE'
 
@@ -24,32 +31,12 @@ class CVE(models.Model):
     short_description = models.TextField(blank=True, help_text='Provide a one-line description for this CVE.')
     support_url = models.URLField()
 
+    # brought over from risk profile
+    severity = models.PositiveSmallIntegerField(null=True, blank=False, choices=Rating.choices)
+    urgency = models.PositiveSmallIntegerField(null=True, blank=False, choices=Rating.choices)
+
     def __str__(self):
         return self.mitre_id
-
-
-class RiskProfile(models.Model):
-    class Rating(models.IntegerChoices):
-        LEAST_CONCERN = 1, _('(1) Least Concern')
-        SOME_CONCERN = 2, _('(2) Some Concern')
-        MODERATE = 3, _('(3) Moderate Concern')
-        HIGH = 4, _('(4) High Concern')
-        CRITICAL = 5, _('(5) CRITICAL')
-
-    class Meta:
-        verbose_name = 'Risk Profile'
-    
-    cve = models.ForeignKey(CVE, on_delete=models.CASCADE)
-
-    # 1-5 scale, 1 being least concern, 5 being critical
-    severity = models.PositiveSmallIntegerField(choices=Rating.choices)
-    urgency = models.PositiveSmallIntegerField(choices=Rating.choices)
-
-    summary = models.TextField(blank=True)
-    impact = models.TextField(blank=True)
-
-    def __str__(self):
-        return f'{self.cve} S:{self.severity} U:{self.urgency}'
 
 
 class FirmwareReference(models.Model):
@@ -57,32 +44,16 @@ class FirmwareReference(models.Model):
         verbose_name = 'Firmware Reference'
         
     cve = models.ForeignKey(CVE, on_delete=models.CASCADE, verbose_name='CVE')
-    rollup_versions = models.BooleanField(default=True, verbose_name='Roll-Up Previous Versions', help_text='Enable to include all previous firmware versions in this profile.')
 
     # Based on firmware release naming convention documentation from FW PE:
     # https://lexmarkad.sharepoint.com/:w:/r/sites/firmware_software_product_engineering/_layouts/15/Doc.aspx?sourcedoc=%7B586CBABA-10E4-4913-ACF9-F39378EEFE9F%7D&file=Firmware%20Release%20Naming%20Convention.docx&action=default&mobileredirect=true&cid=1a3cc8f8-c89f-4300-848b-26772e1e2062
-    affected_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Major', help_text='Example: for FW 076.293, enter 7 (no leading 0)')
-    affected_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Minor', help_text='Example: for FW 076.293, enter 6')
-    affected_build = models.PositiveSmallIntegerField(blank=False, verbose_name='Affected Build', help_text='Example: for FW 076.293, enter 293. If there are letters in the build, leave them out.')
     fixed_major = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Major', help_text='Example: for FW 076.293, enter 7 (no leading 0)')
     fixed_minor = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Minor', help_text='Example: for FW 076.293, enter 6')
     fixed_build = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Build', help_text='Example: for FW 076.293, enter 293. If there are letters in the build, leave them out.')
 
-    def printable_firmware_version(self, which='affected'):
-        major = getattr(self, f'{which}_major')
-        minor = getattr(self, f'{which}_minor')
-        build = getattr(self, f'{which}_build')
-
-        return f'{major:02}.{minor}.{build}'
-
-    def printable_affected_version(self):
-        return self.printable_firmware_version(which='affected')
-    printable_affected_version.short_description = 'Affected Version'
+    def printable_firmware_version(self):
+        return f'{self.major:02}.{self.minor}.{self.build}'
     
-    def printable_fixed_version(self):
-        return self.printable_firmware_version(which='fixed')
-    printable_fixed_version.short_description = 'Fixed Version'
-
     def __str__(self):
         incl_prev = ' and previous' if self.rollup_versions is True else ' only'
         return f'{self.cve}: {self.printable_fixed_version()}{incl_prev}'

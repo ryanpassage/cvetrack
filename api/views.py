@@ -10,8 +10,8 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework import permissions
 
-from core.models import CVE, RiskProfile, FirmwareReference, Device
-from api.serializers import CVESerializer, RiskProfileSerializer, FirmwareReferenceSerializer, DeviceSerializer
+from core.models import CVE, FirmwareReference, Device
+from api.serializers import CVESerializer, FirmwareReferenceSerializer, DeviceSerializer
 
 
 # utilities
@@ -86,11 +86,6 @@ class FirmwareParser:
 class CVEViewSet(viewsets.ModelViewSet):
     queryset = CVE.objects.all()
     serializer_class = CVESerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-class RiskProfileViewSet(viewsets.ModelViewSet):
-    queryset = RiskProfile.objects.all()
-    serializer_class = RiskProfileSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 class FirmwareReferenceViewSet(viewsets.ModelViewSet):
