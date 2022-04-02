@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -78,3 +79,9 @@ class Device(models.Model):
 
     def __str__(self):
         return self.serial_number 
+
+class SysInfo(models.Model):
+    admin_contact = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Current Admin User')
+    cves_last_updated = models.DateTimeField(auto_now=False, auto_now_add=False, blank=False, verbose_name='CVE Data Last Updated')
+    platform_version = models.CharField(max_length=25, blank=False, verbose_name='CVE Tracking Platform Version')
+
