@@ -2,15 +2,16 @@ import re
 from loguru import logger
 from rest_framework import status as http_status
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
-from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework import viewsets
+from django.contrib.auth.models import AnonymousUser
 
-from core.models import CVE, FirmwareReference, Device
+from core.models import CVE, FirmwareReference, Device, SysInfo
 from api.serializers import CVESerializer, FirmwareReferenceSerializer, DeviceSerializer
 
 
@@ -86,12 +87,12 @@ class FirmwareParser:
 class CVEViewSet(viewsets.ModelViewSet):
     queryset = CVE.objects.all()
     serializer_class = CVESerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
 class FirmwareReferenceViewSet(viewsets.ModelViewSet):
     queryset = FirmwareReference.objects.all()
     serializer_class = FirmwareReferenceSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
 class DeviceViewSet(viewsets.ModelViewSet):
     queryset = Device.objects.all()
@@ -101,8 +102,10 @@ class DeviceViewSet(viewsets.ModelViewSet):
 
 # Device check-in endpoint
 class DeviceCheckInView(APIView):
-    throttle_classes = [UserRateThrottle]
-    authentication_classes = [TokenAuthentication]
+    throttle_classes = [AnonRateThrottle]
+    # this API endpoint is not authenticated because devices need to check in from everywhere
+    # uncomment the following lines to require token authentication
+    # authentication_classes = [TokenAuthentication]
     # permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request: Request):
@@ -176,28 +179,30 @@ class DeviceCheckInView(APIView):
 
 
 # Unauthenticated view to request system status
-class StatusView(APIView):
-    throttle_classes = [AnonRateThrottle]
+class StatusView(viewsets.ViewSet):
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get(self, request, format=None):
-        system_ok = True
-        status_msg = None
-
-        # perform a simple database query to determine if system is operational
-        # throttling prevents this from being abused to exhaust resources
-        try:
-            # we don't even really care what the result is, as long as the connection or query don't fail
-            _test = CVE.objects.count()
-        except Exception as ex:
-            system_ok = False
-            status_msg = 'Database not available'
-
-        content = {
-            'system_ok': system_ok,
-            'status': status_msg
+    # was get previously as an APIView
+    def list(self, request, format=None):
+        response = {
+            'status_ok': True,
+            'authenticated': False,
         }
 
-        return Response(content, status=http_status.HTTP_200_OK)
+        if str(request.user) != 'AnonymousUser':
+            # user is logged in, provide additional information
+            response['authenticated'] = True
+            response.update({'user': str(request.user)})
+
+            sysinfo = SysInfo.objects.first()
+
+            response.update({'admin_contact': f'{sysinfo.admin_contact.first_name} {sysinfo.admin_contact.last_name} <{sysinfo.admin_contact.email}>'})
+            response.update({'cves_last_updated': sysinfo.cves_last_updated})
+            response.update({'platform_version': sysinfo.platform_version})
+            response.update({'total_check_ins': Device.objects.count()})
+
+        return Response(response, status=http_status.HTTP_200_OK)
 
 
 class DummyView(APIView):

@@ -81,7 +81,11 @@ class Device(models.Model):
         return self.serial_number 
 
 class SysInfo(models.Model):
+    name = models.CharField(max_length=10, default="SysInfo", blank=False, editable=False, primary_key=True, verbose_name='Site settings name - must not be changed')
     admin_contact = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Current Admin User')
     cves_last_updated = models.DateTimeField(auto_now=False, auto_now_add=False, blank=False, verbose_name='CVE Data Last Updated')
     platform_version = models.CharField(max_length=25, blank=False, verbose_name='CVE Tracking Platform Version')
+    
+    def __str__(self) -> str:
+        return self.name
 
