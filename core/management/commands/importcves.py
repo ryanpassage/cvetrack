@@ -1,6 +1,6 @@
-import pathlib, csv
+import pathlib, csv, datetime
 from django.core.management.base import BaseCommand, CommandError
-from core.models import CVE
+from core.models import CVE, SysInfo
 
 class Command(BaseCommand):
     help = 'Imports CVE data from Lexmark CVE.csv file'
@@ -39,5 +39,9 @@ class Command(BaseCommand):
 
             result = CVE.objects.bulk_create(all_items)
             self.stdout.write(self.style.SUCCESS(f'{len(result)} CVE records created ({failed} failures)'))
+            self.stdout.write(self.style.WARNING('WARNING - Firmware References are now broken and need to be recomputed!!'))
+
+            # update sysinfo record
+            SysInfo.objects.first().cves_last_updated = datetime.datetime.now()
         except Exception as ex:
             self.stderr.write(self.style.ERROR(f'Failed to create CVE records: {ex}'))
