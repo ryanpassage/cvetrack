@@ -25,6 +25,7 @@ class FirmwareParser:
         self.major = 0
         self.minor = 0
         self.build = 0
+        self.full_version = ''
 
         if firmware is None:
             self.parsed = False
@@ -74,6 +75,7 @@ class FirmwareParser:
                 self.minor = int(part[1])
         
         if self.major > 0:
+            self.full_version = f'{self.major}.{self.minor}.{self.build}'
             return True
         else:
             return False
@@ -150,6 +152,10 @@ class DeviceCheckInView(APIView):
             return Response(content, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # find vulnerabilities by firmware reference
+        # default device type is Claiborne/Moja
+        # TODO: integrate with other data sources to determine device type
+        device_type = FirmwareReference.DeviceType.XML
+
         logger.info(f'Checking CVEs for FW {parser.formatted_version()}')
         major_refs = FirmwareReference.objects.filter(fixed_major__gt=parser.major) # automatically vulnerable to all of these
         logger.info(f'\tMajor Refs: {major_refs.count()}')

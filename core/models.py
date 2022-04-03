@@ -41,10 +41,17 @@ class CVE(models.Model):
 
 
 class FirmwareReference(models.Model):
+    class DeviceType(models.TextChoices):
+        XML = 'xml', _('Moja/Claiborne')
+        UCF = 'ucf', _('HomeStretch')
+        COMBO = 'combo', _('Winners Circle')
+        UNKNOWN = 'na', _('Unknown')
+
     class Meta:
         verbose_name = 'Firmware Reference'
         
     cve = models.ForeignKey(CVE, on_delete=models.CASCADE, verbose_name='CVE')
+    device_type = models.CharField(max_length=5, choices=DeviceType.choices, blank=False, default=DeviceType.UNKNOWN)
 
     # Based on firmware release naming convention documentation from FW PE:
     # https://lexmarkad.sharepoint.com/:w:/r/sites/firmware_software_product_engineering/_layouts/15/Doc.aspx?sourcedoc=%7B586CBABA-10E4-4913-ACF9-F39378EEFE9F%7D&file=Firmware%20Release%20Naming%20Convention.docx&action=default&mobileredirect=true&cid=1a3cc8f8-c89f-4300-848b-26772e1e2062
@@ -53,11 +60,10 @@ class FirmwareReference(models.Model):
     fixed_build = models.PositiveSmallIntegerField(blank=False, verbose_name='Fixed Build', help_text='Example: for FW 076.293, enter 293. If there are letters in the build, leave them out.')
 
     def printable_firmware_version(self):
-        return f'{self.major:02}.{self.minor}.{self.build}'
+        return f'{self.fixed_major:02}.{self.fixed_minor}.{self.fixed_build}'
     
     def __str__(self):
-        incl_prev = ' and previous' if self.rollup_versions is True else ' only'
-        return f'{self.cve}: {self.printable_fixed_version()}{incl_prev}'
+        return f'{self.cve}: {self.printable_firmware_version()}'
 
 
 class Device(models.Model):
