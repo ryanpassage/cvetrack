@@ -9,7 +9,7 @@ class CVESerializer(serializers.HyperlinkedModelSerializer):
 class FirmwareReferenceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FirmwareReference
-        fields = ('cve', 'rollup_versions', 'affected_major', 'affected_minor', 'affected_build', 'fixed_major', 'fixed_minor', 'fixed_build',)
+        fields = ('cve', 'fixed_major', 'fixed_minor', 'fixed_build', 'printable_firmware_version',)
 
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
