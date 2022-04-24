@@ -149,3 +149,10 @@ WHITENOISE_ROOT = os.path.join(PROJECT_DIR, 'static', 'root_static')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '48/day',
+        'user': '1000/day'
+    }
+}
